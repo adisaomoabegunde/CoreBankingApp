@@ -102,8 +102,8 @@ jobs:
   # ──────────────────────────────────────────────
   # Stage 3: Deploy to Staging (develop branch)
   # ──────────────────────────────────────────────
-  deploy-staging:
-    name: Deploy to Staging
+  deploy-dev:
+    name: Deploy to Dev
     runs-on: ubuntu-latest
     needs: docker-build
     if: github.ref == 'refs/heads/develop'
