@@ -2,7 +2,9 @@ using CoreBanking.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Render injects PORT env var — bind to it if present
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://+:{port}");
 
 builder.Services.AddControllers();
 builder.Services.AddHealthChecks();
@@ -21,7 +23,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// Render handles HTTPS at the load balancer — skip in-container redirect
+if (!app.Environment.IsProduction())
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseAuthorization();
 

@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: corebanking-api
+    runtime: docker
+    repo: https://github.com/adisaomoabegunde/CoreBankingApp.git
+    branch: main
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
