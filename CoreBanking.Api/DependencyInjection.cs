@@ -1,6 +1,7 @@
 ﻿using CoreBanking.Application;
 using CoreBanking.Infrastructure;
 
+// Core
 namespace CoreBanking.Api
 {
     public static class DependencyInjection

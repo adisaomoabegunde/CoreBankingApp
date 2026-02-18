@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using CoreBanking.Application.Interfaces;
+using CoreBanking.Infrastructure.Repositories;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +13,9 @@ namespace CoreBanking.Infrastructure
     {
         public static IServiceCollection AddInfrastructureDI(this IServiceCollection services)
         {
+            services.AddScoped<IAuditRepository, AuditRepository>();
+            services.AddScoped<ITokenBlacklistRepository, TokenBlacklistRepository>();
+
             return services;
         }
     }
