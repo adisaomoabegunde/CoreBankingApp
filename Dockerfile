@@ -1,7 +1,6 @@
 # ── Base runtime image ──
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
-EXPOSE 8080
 
 # ── Build stage ──
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
@@ -32,13 +31,10 @@ WORKDIR /app
 # Install curl for health checks
 RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
 
-# Run as non-root user
-USER $APP_UID
-
 COPY --from=publish /app/publish .
 
-# Health check: verify the API is responding
-HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
-    CMD curl -f http://localhost:8080/health || exit 1
+# Default port — Render overrides via PORT env var
+ENV PORT=8080
+ENV ASPNETCORE_ENVIRONMENT=Production
 
 ENTRYPOINT ["dotnet", "CoreBanking.Api.dll"]
