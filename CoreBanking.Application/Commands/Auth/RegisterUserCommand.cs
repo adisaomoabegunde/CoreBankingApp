@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using CoreBanking.Domain.Common.Responses;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CoreBanking.Application.Commands.Auth
 {
-    public class RegisterUserCommand : IRequest<RegisterUserResponse>
+    public class RegisterUserCommand : IRequest<ApiResponse<RegisterUserResponse>>
     {
         public string Username { get; set; } = default!;
         public string Email { get; set; } = default!;
