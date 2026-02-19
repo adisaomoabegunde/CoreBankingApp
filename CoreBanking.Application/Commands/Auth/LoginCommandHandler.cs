@@ -1,4 +1,5 @@
 ﻿using CoreBanking.Application.Interfaces;
+using CoreBanking.Domain.Common.Responses;
 using CoreBanking.Domain.Entities;
 using MediatR;
 using System;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CoreBanking.Application.Commands.Auth
 {
-    internal class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponse>
+    public class LoginCommandHandler : IRequestHandler<LoginCommand, ApiResponse<AuthResponse>>
     {
         private readonly IUserRepository _userRepository;
         private readonly IJwtService _jwtService;
@@ -22,59 +23,93 @@ namespace CoreBanking.Application.Commands.Auth
             _jwtService = jwtService;
             _auditRepository = auditRepository;
         }
-        public async Task<AuthResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
+        public async Task<ApiResponse<AuthResponse>> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
-            var ipAddress = request.IpAddress;
 
-            var user = await _userRepository.GetByEmailAsync(request.Email);
-            if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+            try
             {
-                await _auditRepository.AddAsync(new Domain.Entities.AuditLog
+                var ipAddress = request.IpAddress;
+                var user = await _userRepository.GetByEmailAsync(request.Email);
+
+
+                if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
                 {
-                    Action = "Login Failed",
-                    IpAddress = ipAddress,
-                    Description = $"Failed login attempt for email: {request.Email}"
-                });
-                throw new UnauthorizedAccessException("Invalid email or password.");
-            }
-            if (!user.IsActive)
-            {
+                    await _auditRepository.AddAsync(new AuditLog
+                    {
+                        Action = "Login Failed",
+                        IpAddress = ipAddress,
+                        Description = $"Failed login attempt for email: {request.Email}"
+                    });
+                    return ApiResponse<AuthResponse>
+                        .FailureResponse("Invalid email or password.", "01");
+                }
 
-                await _auditRepository.AddAsync(new AuditLog {
-                    UserId = user.Id,
-                    Action = "Login Failed - Inactive Account",
-                    IpAddress = ipAddress,
-                    Description = $"Login attempt for inactive account: {request.Email}"
-                });
-                throw new UnauthorizedAccessException("Account is inactive.");
-            }
-            var passwordValid = BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
-            if (!passwordValid)
-            {
+
+                if (!user.IsActive)
+                {
+
+                    await _auditRepository.AddAsync(new AuditLog
+                    {
+                        UserId = user.Id,
+                        Action = "Login Failed - Inactive Account",
+                        IpAddress = ipAddress,
+                        Description = $"Login attempt for inactive account: {request.Email}"
+                    });
+                    return ApiResponse<AuthResponse>
+                        .FailureResponse("Account is inactive. Please contact support.", "02");
+                }
+
+
+                var passwordValid = BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
+                if (!passwordValid)
+                {
+                    await _auditRepository.AddAsync(new AuditLog
+                    {
+                        UserId = user.Id,
+                        Action = "Login Failed - Invalid Password",
+                        IpAddress = ipAddress,
+                        Description = "Incorrect password"
+                    });
+                    return ApiResponse<AuthResponse>
+                        .FailureResponse("Invalid email or password.", "01");
+
+                }
+
+                var token = _jwtService.GenerateToken(user);
                 await _auditRepository.AddAsync(new AuditLog
                 {
                     UserId = user.Id,
-                    Action = "Login Failed - Invalid Password",
+                    Action = "Login Success",
                     IpAddress = ipAddress,
-                    Description = "Incorrect password"
+                    Description = "User logged in successfully"
                 });
 
-                throw new UnauthorizedAccessException("Invalid email or password.");
+
+                var response = new AuthResponse
+                {
+                    Token = token,
+                    Username = user.Username,
+                    Role = user.Role
+                };
+
+                return ApiResponse<AuthResponse>
+                    .SuccessResponse(response, "Login successful.");
+
             }
-            var token = _jwtService.GenerateToken(user);
-            await _auditRepository.AddAsync(new AuditLog
-            {
-                UserId = user.Id,
-                Action = "Login Success",
-                IpAddress = ipAddress,
-                Description = "User logged in successfully"
-            });
-            return new AuthResponse
-            {
-                Token = token,
-                Username = user.Username,
-                Role = user.Role
-            };
+            catch (Exception ex)
+            { 
+                return ApiResponse<AuthResponse>
+                    .FailureResponse(ex.Message, "99");
+
+
+
+            }
+
+
+
+           
+            
+           
         }
     }
 }

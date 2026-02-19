@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using CoreBanking.Domain.Common.Responses;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace CoreBanking.Application.Commands.Auth
 {
-    public class LogoutCommand : IRequest<string>
+    public class LogoutCommand : IRequest<ApiResponse<string>>
     {
-        public string Token { get; set; } = default!;
+        //public string Token { get; set; } = default!;
     }
 }

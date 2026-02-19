@@ -19,22 +19,14 @@ namespace CoreBanking.Api.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterUserCommand command)
         {
-            try
-            {
-
+            
                 var result = await _mediator.Send(command);
                 return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+      
         }
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginCommand command)
         {
-            command.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
-
             var result = await _mediator.Send(command);
             return Ok(result);
 
@@ -44,16 +36,9 @@ namespace CoreBanking.Api.Controllers
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
-            var token = HttpContext.Request.Headers["Authorization"]
-                .ToString()
-                .Replace("Bearer ", "");
-            var result = await _mediator.Send(new LogoutCommand
-            {
-                Token = token
-
-            });
-
-            return Ok(new { message = result });
+           
+            var result = await _mediator.Send(new LogoutCommand());
+            return Ok( result );
 
         }
     }
