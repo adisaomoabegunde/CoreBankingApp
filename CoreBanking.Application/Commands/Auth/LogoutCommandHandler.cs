@@ -1,6 +1,8 @@
 ﻿using CoreBanking.Application.Interfaces;
+using CoreBanking.Domain.Common.Responses;
 using CoreBanking.Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -10,36 +12,64 @@ using System.Threading.Tasks;
 
 namespace CoreBanking.Application.Commands.Auth
 {
-    public class LogoutCommandHandler : IRequestHandler<LogoutCommand, string>
+    public class LogoutCommandHandler : IRequestHandler<LogoutCommand, ApiResponse<string>>
     {
         private readonly ITokenBlacklistRepository _tokenBlacklistRepository;
         private readonly IAuditRepository _auditRepository;
-
-        public LogoutCommandHandler(ITokenBlacklistRepository tokenBlacklistRepository, IAuditRepository auditRepository)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public LogoutCommandHandler(ITokenBlacklistRepository tokenBlacklistRepository, IAuditRepository auditRepository, IHttpContextAccessor httpContextAccessor)
         {
             _tokenBlacklistRepository = tokenBlacklistRepository;
             _auditRepository = auditRepository;
+            _httpContextAccessor = httpContextAccessor;
         }
-        public async Task<string> Handle(LogoutCommand request, CancellationToken cancellationToken)
+        public async Task<ApiResponse<string>> Handle(LogoutCommand request, CancellationToken cancellationToken)
         {
-            var handler = new JwtSecurityTokenHandler();
-            var jwtToken = handler.ReadJwtToken(request.Token);
 
-            var expiry = jwtToken.ValidTo;
 
-            await _tokenBlacklistRepository.AddAsync(new RevokedToken
+            try
             {
-                Token = request.Token,
-                ExpiryDate = expiry
-            });
 
-            await _auditRepository.AddAsync(new AuditLog
+                var token = _httpContextAccessor.HttpContext.Request.Headers["Authorization"]
+               .ToString()
+               .Replace("Bearer ", "");
+
+
+                var handler = new JwtSecurityTokenHandler();
+                var jwtToken = handler.ReadJwtToken(token);
+
+                var expiry = jwtToken.ValidTo;
+
+
+
+                await _tokenBlacklistRepository.AddAsync(new RevokedToken
+                {
+                    Token = token,
+                    ExpiryDate = expiry
+                });
+
+                await _auditRepository.AddAsync(new AuditLog
+                {
+                    Action = "Logout",
+                    Description = "User logged out",
+                    IpAddress = "N/A"
+                });
+                return ApiResponse<string>
+                    .SuccessResponse("Logout successful", "00");
+
+
+            }
+            catch (Exception ex)
             {
-                Action = "Logout",
-                Description = "User logged out",
-                IpAddress = "N/A"
-            });
-            return "Logout successful.";
+                return ApiResponse<string>
+                    .FailureResponse("Logout failed: " + ex.Message, "03");
+            }
+
+
+
+
+
+            
 
         }
     }
