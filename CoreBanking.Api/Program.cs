@@ -35,7 +35,7 @@ public partial class Program {
         builder.Services.AddSwaggerGen();
 
         builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
         builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<IJwtService, JwtService>();
@@ -140,6 +140,12 @@ public partial class Program {
 
         var app = builder.Build();
 
+        // Apply pending EF Core migrations automatically on startup
+        using (var scope = app.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            db.Database.Migrate();
+        }
 
         // Swagger available in all environments (useful for testing on Render)
         app.UseSwagger();
