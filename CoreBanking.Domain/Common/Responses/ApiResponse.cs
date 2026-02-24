@@ -13,7 +13,7 @@ namespace CoreBanking.Domain.Common.Responses
         public string Code { get; set; } = default!;
         public T? Data { get; set; }
 
-        public static ApiResponse<T> SuccessResponse<T>(T data, string message = "Successful")
+        public static ApiResponse<T> SuccessResponse(T data, string message = "Successful")
         {
             return new ApiResponse<T>
             {
@@ -23,16 +23,61 @@ namespace CoreBanking.Domain.Common.Responses
                 Data = data
             };
         }
-        public static ApiResponse<T> FailureResponse(string message, string code = "99")
+        public static ApiResponse<T> BadRequest(string message)
         {
             return new ApiResponse<T>
             {
                 Success = false,
                 Message = message,
-                Code = code,
+                Code = "400",
                 Data = default
             };
 
+        }
+        
+        public static ApiResponse<T> Unauthorized(string message)
+        {
+            return new ApiResponse<T>
+            {
+                Success = false,
+                Code = "401",
+                Message = message,
+                Data = default
+            };
+        }
+
+        public static ApiResponse<T> Duplicate(string message)
+        {
+            return new ApiResponse<T>
+            {
+                Success = false,
+                Code = "409",
+                Message = message,
+                Data = default
+            };
+
+        }
+
+        public static ApiResponse<T> NotFound(string message)
+        {
+            return new ApiResponse<T>
+            {
+                Success = false,
+                Code = "404",
+                Message = message,
+                Data = default
+            };
+        }
+
+        public static ApiResponse<T> InternalServerError(string message = "An unexpected error occured")
+        {
+            return new ApiResponse<T>
+            {
+                Success = false,
+                Code = "500",
+                Message = message,
+                Data = default
+            };
         }
     }
 }

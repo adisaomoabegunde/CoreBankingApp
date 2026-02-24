@@ -62,7 +62,7 @@ namespace CoreBanking.Application.Commands.Auth
             catch (Exception ex)
             {
                 return ApiResponse<string>
-                    .FailureResponse("Logout failed: " + ex.Message, "03");
+                    .InternalServerError("Logout failed: " + ex.Message);
             }
 
 

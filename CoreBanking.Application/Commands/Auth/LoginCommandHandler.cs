@@ -41,7 +41,7 @@ namespace CoreBanking.Application.Commands.Auth
                         Description = $"Failed login attempt for email: {request.Email}"
                     });
                     return ApiResponse<AuthResponse>
-                        .FailureResponse("Invalid email or password.", "01");
+                        .Unauthorized("Invalid email or password.");
                 }
 
 
@@ -56,7 +56,7 @@ namespace CoreBanking.Application.Commands.Auth
                         Description = $"Login attempt for inactive account: {request.Email}"
                     });
                     return ApiResponse<AuthResponse>
-                        .FailureResponse("Account is inactive. Please contact support.", "02");
+                        .BadRequest("Account is inactive. Please contact support.");
                 }
 
 
@@ -71,7 +71,7 @@ namespace CoreBanking.Application.Commands.Auth
                         Description = "Incorrect password"
                     });
                     return ApiResponse<AuthResponse>
-                        .FailureResponse("Invalid email or password.", "01");
+                        .Unauthorized("Invalid email or password.");
 
                 }
 
@@ -99,7 +99,7 @@ namespace CoreBanking.Application.Commands.Auth
             catch (Exception ex)
             { 
                 return ApiResponse<AuthResponse>
-                    .FailureResponse(ex.Message, "99");
+                    .InternalServerError(ex.Message);
 
 
 

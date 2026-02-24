@@ -27,7 +27,7 @@ namespace CoreBanking.Application.Commands.Auth
                 if (await _userRepository.EmailExistsAsync(request.Email))
                 {
                     return ApiResponse<RegisterUserResponse>
-                        .FailureResponse("Email already exists.", "01");
+                        .Unauthorized("Email already exists.");
                 }
 
                 var user = new User
@@ -56,7 +56,7 @@ namespace CoreBanking.Application.Commands.Auth
             catch (Exception ex)
             {
                 return ApiResponse<RegisterUserResponse>
-                   .FailureResponse(ex.Message, "99");
+                   .InternalServerError("Registration failed: " + ex.Message);
 
             }
 

@@ -148,6 +148,8 @@ public partial class Program {
         });
 
 
+        builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserValidator>();
+
         builder.Services.AddHttpContextAccessor();
 
         builder.Services.AddAppDI();
