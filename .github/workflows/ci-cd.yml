@@ -19,6 +19,22 @@ jobs:
     name: Build & Test
     runs-on: ubuntu-latest
 
+    # Spin up a real PostgreSQL instance for integration tests
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: CoreBankingDb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -43,6 +59,8 @@ jobs:
         run: dotnet build Corebankingapp.sln --configuration Release --no-restore
 
       - name: Run tests
+        env:
+          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=CoreBankingDb;Username=postgres;Password=postgres"
         run: dotnet test Corebankingapp.sln --configuration Release --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage"
 
       - name: Upload test results
