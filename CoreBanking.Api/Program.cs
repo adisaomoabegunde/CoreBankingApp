@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Text;
 using CoreBanking.Api;
 using CoreBanking.API.Middleware;
+using Microsoft.Extensions.Configuration.Json;
 using CoreBanking.Application.Commands.Auth;
 using CoreBanking.Application.Interfaces;
 using CoreBanking.Application.Validators;
@@ -22,6 +23,19 @@ public partial class Program {
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        // Disable config file watching in production.
+        // In a container, appsettings files never change at runtime, so FileSystemWatcher
+        // instances created by ReloadOnChange are pure overhead and consume inotify handles
+        // on Linux, which are a limited OS resource.
+        if (builder.Environment.IsProduction())
+        {
+            foreach (var source in builder.Configuration.Sources
+                         .OfType<JsonConfigurationSource>())
+            {
+                source.ReloadOnChange = false;
+            }
+        }
+
         // Render injects PORT env var — only override when deployed (not in local dev)
         var port = Environment.GetEnvironmentVariable("PORT");
         if (port is not null)
@@ -35,7 +49,7 @@ public partial class Program {
         builder.Services.AddSwaggerGen();
 
         builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
         builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<IJwtService, JwtService>();
@@ -140,6 +154,12 @@ public partial class Program {
 
         var app = builder.Build();
 
+        // Apply pending EF Core migrations automatically on startup
+        using (var scope = app.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            db.Database.Migrate();
+        }
 
         // Swagger available in all environments (useful for testing on Render)
         app.UseSwagger();
