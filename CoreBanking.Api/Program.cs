@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Text;
 using CoreBanking.Api;
 using CoreBanking.API.Middleware;
+using Microsoft.Extensions.Configuration.Json;
 using CoreBanking.Application.Commands.Auth;
 using CoreBanking.Application.Interfaces;
 using CoreBanking.Application.Validators;
@@ -21,6 +22,19 @@ public partial class Program {
     private static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
+        // Disable config file watching in production.
+        // In a container, appsettings files never change at runtime, so FileSystemWatcher
+        // instances created by ReloadOnChange are pure overhead and consume inotify handles
+        // on Linux, which are a limited OS resource.
+        if (builder.Environment.IsProduction())
+        {
+            foreach (var source in builder.Configuration.Sources
+                         .OfType<JsonConfigurationSource>())
+            {
+                source.ReloadOnChange = false;
+            }
+        }
 
         // Render injects PORT env var — only override when deployed (not in local dev)
         var port = Environment.GetEnvironmentVariable("PORT");
