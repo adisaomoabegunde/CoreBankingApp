@@ -150,6 +150,8 @@ public partial class Program {
 
         builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserValidator>();
 
+        builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
         builder.Services.AddHttpContextAccessor();
 
         builder.Services.AddAppDI();
