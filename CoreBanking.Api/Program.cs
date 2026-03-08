@@ -53,9 +53,13 @@ public partial class Program {
 
         builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<IJwtService, JwtService>();
+        builder.Services.AddScoped<IOtpRepository, OtpRepository>();
+        builder.Services.AddScoped<IOtpService, OtpService>();
+        builder.Services.AddScoped<IPendingRegistrationRepository, PendingRegistrationRepository>();
 
         builder.Services.AddMediatR(typeof(RegisterUserCommand).Assembly);
         builder.Services.AddValidatorsFromAssembly(typeof(RegisterUserValidator).Assembly);
+        
 
         builder.Services.AddAuthentication("Bearer")
             .AddJwtBearer("Bearer", options =>
