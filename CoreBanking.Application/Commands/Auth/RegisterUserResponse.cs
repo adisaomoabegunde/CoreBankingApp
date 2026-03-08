@@ -12,6 +12,6 @@ namespace CoreBanking.Application.Commands.Auth
         public string Username { get; set; } = default!;
         public string Email { get; set; } = default!;
         public string Role { get; set; } = default!;
-        public string Message { get; set; } = default!;
+        public string Otp {  get; set; } = default!;
     }
 }
