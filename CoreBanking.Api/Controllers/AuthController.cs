@@ -24,6 +24,11 @@ namespace CoreBanking.Api.Controllers
                 return Ok(result);
       
         }
+        [HttpPost("verify-otp")]
+        public async Task<IActionResult> VerifyOtp(VerifyOtpCommand command)
+        {
+            return Ok(await _mediator.Send(command));
+        }
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginCommand command)
         {

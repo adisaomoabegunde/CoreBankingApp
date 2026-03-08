@@ -11,12 +11,16 @@ namespace CoreBanking.Application.Commands.Auth
     public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, ApiResponse<RegisterUserResponse>>
     {
         private readonly IUserRepository _userRepository;
-       
+        private readonly IOtpRepository _otpRepository;
+        private readonly IOtpService _otpService;
+        private readonly IPendingRegistrationRepository _pendingRegistrationRepository;
 
-        public RegisterUserCommandHandler(IUserRepository userRepository)
+        public RegisterUserCommandHandler(IUserRepository userRepository, IOtpService otpService, IOtpRepository otpRepository, IPendingRegistrationRepository pendingRegistrationRepository)
         {
             _userRepository = userRepository;
-           
+            _otpService = otpService;
+            _otpRepository = otpRepository;
+            _pendingRegistrationRepository = pendingRegistrationRepository;
         }
 
         public async Task<ApiResponse<RegisterUserResponse>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
@@ -30,27 +34,42 @@ namespace CoreBanking.Application.Commands.Auth
                         .Unauthorized("Email already exists.");
                 }
 
-                var user = new User
+                var otpCode = _otpService.GenerateOtp();
+
+
+                var pendingUser = new PendingRegistration
                 {
                     Username = request.Username,
                     Email = request.Email,
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
                     Role = request.Role,
-                    IsActive = true
+                    OtpCode = otpCode,
+                    ExpirationTime = DateTime.UtcNow.AddMinutes(5)
                 };
 
-                await _userRepository.AddAsync(user);
+                await _pendingRegistrationRepository.AddAsync(pendingUser);
+
+
+                //var otp = new Otp
+                //{
+                //    UserId = user.Id,
+                //    Code = otpCode,
+                //    ExpirationTime = DateTime.UtcNow.AddMinutes(5)
+                //};
+
+                //await _otpRepository.AddAsync(otp);
+
                 var response = new RegisterUserResponse
                 {
-                    Id = user.Id,
-                    Email = user.Email,
-                    Username = user.Username,
-                    Role = user.Role,
-                    Message = "User registered successfully"
+                    Id = pendingUser.Id,
+                    Email = pendingUser.Email,
+                    Username = pendingUser.Username,
+                    Role = pendingUser.Role,
+                    Otp = otpCode
                 };
 
                 return ApiResponse<RegisterUserResponse>
-                    .SuccessResponse(response, "Registration Successfull");
+                    .SuccessResponse(response, "OTP has been sent to your email. Kindly confirm OTP.");
 
             }
             catch (Exception ex)
