@@ -16,6 +16,7 @@ namespace CoreBanking.Infrastructure.Persistence
         public DbSet<RevokedToken> RevokedTokens { get; set; }
         public DbSet<Otp> Otps { get; set; }
         public DbSet<PendingRegistration> PendingRegistrations { get; set; }
+        public DbSet<Customer> Customers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using CoreBanking.Application.Commands.Customers;
 
 // Make Program accessible for integration tests
 
@@ -56,9 +57,12 @@ public partial class Program {
         builder.Services.AddScoped<IOtpRepository, OtpRepository>();
         builder.Services.AddScoped<IOtpService, OtpService>();
         builder.Services.AddScoped<IPendingRegistrationRepository, PendingRegistrationRepository>();
+        builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+        builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
         builder.Services.AddMediatR(typeof(RegisterUserCommand).Assembly);
         builder.Services.AddValidatorsFromAssembly(typeof(RegisterUserValidator).Assembly);
+        builder.Services.AddMediatR(typeof(RegisterCustomerCommandHandler).Assembly);
         
 
         builder.Services.AddAuthentication("Bearer")
