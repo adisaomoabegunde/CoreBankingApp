@@ -11,13 +11,18 @@ namespace CoreBanking.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(
-                @"ALTER TABLE ""Customers"" 
-          ALTER COLUMN ""KYCStatus"" 
-          TYPE integer 
-          USING CASE 
+                @"UPDATE ""Customers"" SET ""KYCStatus"" = 'Pending' WHERE ""KYCStatus"" IS NULL OR ""KYCStatus"" NOT IN ('Pending', 'Verified', 'Rejected');"
+            );
+
+            migrationBuilder.Sql(
+                @"ALTER TABLE ""Customers""
+          ALTER COLUMN ""KYCStatus""
+          TYPE integer
+          USING CASE
                 WHEN ""KYCStatus"" = 'Pending' THEN 0
                 WHEN ""KYCStatus"" = 'Verified' THEN 1
                 WHEN ""KYCStatus"" = 'Rejected' THEN 2
+                ELSE 0
           END;"
             );
         }

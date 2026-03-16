@@ -3,6 +3,9 @@
   "WorkspaceRootPath": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Api\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{8BAC3023-A4F6-456D-85FE-FC645B91BCE7}|..\\CoreBanking.Infrastructure\\CoreBanking.Infrastructure.csproj|c:\\users\\user\\onedrive\\desktop\\corebankingapp\\corebanking.infrastructure\\repositories\\userrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{8BAC3023-A4F6-456D-85FE-FC645B91BCE7}|..\\CoreBanking.Infrastructure\\CoreBanking.Infrastructure.csproj|c:\\users\\user\\onedrive\\desktop\\corebankingapp\\corebanking.infrastructure\\migrations\\20260316193028_changeuserroletoenum.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -90,9 +93,6 @@
     },
     {
       "AbsoluteMoniker": "D:0:0:{05202474-8774-4568-B016-B6EB14659621}|..\\CoreBanking.Application\\CoreBanking.Application.csproj|c:\\users\\user\\onedrive\\desktop\\corebankingapp\\corebanking.application\\interfaces\\ijwtservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8BAC3023-A4F6-456D-85FE-FC645B91BCE7}|..\\CoreBanking.Infrastructure\\CoreBanking.Infrastructure.csproj|c:\\users\\user\\onedrive\\desktop\\corebankingapp\\corebanking.infrastructure\\repositories\\userrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{05202474-8774-4568-B016-B6EB14659621}|..\\CoreBanking.Application\\CoreBanking.Application.csproj|c:\\users\\user\\onedrive\\desktop\\corebankingapp\\corebanking.application\\queries\\customers\\getcurrentcustomerquery.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
@@ -213,37 +213,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "20260316193028_ChangeUserRoleToEnum.cs",
-              "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Infrastructure\\Migrations\\20260316193028_ChangeUserRoleToEnum.cs",
-              "RelativeDocumentMoniker": "..\\CoreBanking.Infrastructure\\Migrations\\20260316193028_ChangeUserRoleToEnum.cs",
-              "ToolTip": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Infrastructure\\Migrations\\20260316193028_ChangeUserRoleToEnum.cs",
-              "RelativeToolTip": "..\\CoreBanking.Infrastructure\\Migrations\\20260316193028_ChangeUserRoleToEnum.cs",
-              "ViewState": "AgIAAA8AAAAAzczMzMwYwCMAAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-16T19:33:25.414Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "RegisterUserCommandHandler.cs",
-              "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Application\\Commands\\Auth\\RegisterUserCommandHandler.cs",
-              "RelativeDocumentMoniker": "..\\CoreBanking.Application\\Commands\\Auth\\RegisterUserCommandHandler.cs",
-              "ToolTip": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Application\\Commands\\Auth\\RegisterUserCommandHandler.cs",
-              "RelativeToolTip": "..\\CoreBanking.Application\\Commands\\Auth\\RegisterUserCommandHandler.cs",
-              "ViewState": "AgIAABEAAACAZmZmZmYWwCkAAAARAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-17T17:32:15.65Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "VerifyOtpCommandHandler.cs",
               "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Application\\Commands\\Auth\\VerifyOtpCommandHandler.cs",
               "RelativeDocumentMoniker": "..\\CoreBanking.Application\\Commands\\Auth\\VerifyOtpCommandHandler.cs",
@@ -256,7 +230,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "LoginCommandHandler.cs",
               "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Application\\Commands\\Auth\\LoginCommandHandler.cs",
               "RelativeDocumentMoniker": "..\\CoreBanking.Application\\Commands\\Auth\\LoginCommandHandler.cs",
@@ -269,7 +243,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "JwtService.cs",
               "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Infrastructure\\Services\\JwtService.cs",
               "RelativeDocumentMoniker": "..\\CoreBanking.Infrastructure\\Services\\JwtService.cs",
@@ -282,7 +256,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "RegisterUserResponse.cs",
               "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Application\\Commands\\Auth\\RegisterUserResponse.cs",
               "RelativeDocumentMoniker": "..\\CoreBanking.Application\\Commands\\Auth\\RegisterUserResponse.cs",
@@ -295,7 +269,46 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 0,
+              "Title": "UserRepository.cs",
+              "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Infrastructure\\Repositories\\UserRepository.cs",
+              "RelativeDocumentMoniker": "..\\CoreBanking.Infrastructure\\Repositories\\UserRepository.cs",
+              "ToolTip": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Infrastructure\\Repositories\\UserRepository.cs",
+              "RelativeToolTip": "..\\CoreBanking.Infrastructure\\Repositories\\UserRepository.cs",
+              "ViewState": "AgIAAAQAAAAAAAAAAAAiwBUAAAA+AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-17T17:50:44.434Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "20260316193028_ChangeUserRoleToEnum.cs",
+              "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Infrastructure\\Migrations\\20260316193028_ChangeUserRoleToEnum.cs",
+              "RelativeDocumentMoniker": "..\\CoreBanking.Infrastructure\\Migrations\\20260316193028_ChangeUserRoleToEnum.cs",
+              "ToolTip": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Infrastructure\\Migrations\\20260316193028_ChangeUserRoleToEnum.cs",
+              "RelativeToolTip": "..\\CoreBanking.Infrastructure\\Migrations\\20260316193028_ChangeUserRoleToEnum.cs",
+              "ViewState": "AgIAABMAAAAAzczMzMwYwCgAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-16T19:33:25.414Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "RegisterUserCommandHandler.cs",
+              "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Application\\Commands\\Auth\\RegisterUserCommandHandler.cs",
+              "RelativeDocumentMoniker": "..\\CoreBanking.Application\\Commands\\Auth\\RegisterUserCommandHandler.cs",
+              "ToolTip": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Application\\Commands\\Auth\\RegisterUserCommandHandler.cs",
+              "RelativeToolTip": "..\\CoreBanking.Application\\Commands\\Auth\\RegisterUserCommandHandler.cs",
+              "ViewState": "AgIAABEAAACAZmZmZmYWwCkAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-17T17:32:15.65Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
               "Title": "VerifyOtpCommand.cs",
               "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Application\\Commands\\Auth\\VerifyOtpCommand.cs",
               "RelativeDocumentMoniker": "..\\CoreBanking.Application\\Commands\\Auth\\VerifyOtpCommand.cs",
@@ -308,7 +321,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "PendingRegistration.cs",
               "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Domain\\Entities\\PendingRegistration.cs",
               "RelativeDocumentMoniker": "..\\CoreBanking.Domain\\Entities\\PendingRegistration.cs",
@@ -321,7 +334,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "RegisterUserCommand.cs",
               "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Application\\Commands\\Auth\\RegisterUserCommand.cs",
               "RelativeDocumentMoniker": "..\\CoreBanking.Application\\Commands\\Auth\\RegisterUserCommand.cs",
@@ -334,7 +347,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 10,
               "Title": "User.cs",
               "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Domain\\Entities\\User.cs",
               "RelativeDocumentMoniker": "..\\CoreBanking.Domain\\Entities\\User.cs",
@@ -347,7 +360,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 11,
               "Title": "UserRole.cs",
               "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Domain\\Enums\\UserRole.cs",
               "RelativeDocumentMoniker": "..\\CoreBanking.Domain\\Enums\\UserRole.cs",
@@ -360,20 +373,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 12,
               "Title": "20260316163212_ChangeKycStatusToEnum.cs",
               "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Infrastructure\\Migrations\\20260316163212_ChangeKycStatusToEnum.cs",
               "RelativeDocumentMoniker": "..\\CoreBanking.Infrastructure\\Migrations\\20260316163212_ChangeKycStatusToEnum.cs",
               "ToolTip": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Infrastructure\\Migrations\\20260316163212_ChangeKycStatusToEnum.cs",
               "RelativeToolTip": "..\\CoreBanking.Infrastructure\\Migrations\\20260316163212_ChangeKycStatusToEnum.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB0AAAAcAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACIAAAAcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-03-16T16:39:33.535Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 13,
               "Title": "GetCurrentCustomerQueryHandler.cs",
               "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Application\\Queries\\Customers\\GetCurrentCustomerQueryHandler.cs",
               "RelativeDocumentMoniker": "..\\CoreBanking.Application\\Queries\\Customers\\GetCurrentCustomerQueryHandler.cs",
@@ -386,7 +399,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 15,
               "Title": "UpdateCustomerKycStatusCommand.cs",
               "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Application\\Commands\\Customers\\UpdateCustomerKycStatusCommand.cs",
               "RelativeDocumentMoniker": "..\\CoreBanking.Application\\Commands\\Customers\\UpdateCustomerKycStatusCommand.cs",
@@ -399,7 +412,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 16,
               "Title": "UpdateCustomerKycStatusCommandValidator.cs",
               "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Application\\Validators\\UpdateCustomerKycStatusCommandValidator.cs",
               "RelativeDocumentMoniker": "..\\CoreBanking.Application\\Validators\\UpdateCustomerKycStatusCommandValidator.cs",
@@ -412,7 +425,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 14,
               "Title": "CustomerDto.cs",
               "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Application\\DTOs\\CustomerDto.cs",
               "RelativeDocumentMoniker": "..\\CoreBanking.Application\\DTOs\\CustomerDto.cs",
@@ -425,7 +438,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 17,
               "Title": "UpdateCustomerKycStatusCommandHandler.cs",
               "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Application\\Commands\\Customers\\UpdateCustomerKycStatusCommandHandler.cs",
               "RelativeDocumentMoniker": "..\\CoreBanking.Application\\Commands\\Customers\\UpdateCustomerKycStatusCommandHandler.cs",
@@ -438,7 +451,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 18,
               "Title": "ICurrentUserService.cs",
               "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Application\\Interfaces\\ICurrentUserService.cs",
               "RelativeDocumentMoniker": "..\\CoreBanking.Application\\Interfaces\\ICurrentUserService.cs",
@@ -451,7 +464,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 19,
               "Title": "RegisterCustomerCommandHandler.cs",
               "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Application\\Commands\\Customers\\RegisterCustomerCommandHandler.cs",
               "RelativeDocumentMoniker": "..\\CoreBanking.Application\\Commands\\Customers\\RegisterCustomerCommandHandler.cs",
@@ -464,7 +477,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 20,
               "Title": "Customer.cs",
               "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Domain\\Entities\\Customer.cs",
               "RelativeDocumentMoniker": "..\\CoreBanking.Domain\\Entities\\Customer.cs",
@@ -477,7 +490,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 21,
               "Title": "KycStatus.cs",
               "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Domain\\Enums\\KycStatus.cs",
               "RelativeDocumentMoniker": "..\\CoreBanking.Domain\\Enums\\KycStatus.cs",
@@ -490,7 +503,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 22,
               "Title": "RegisterCustomerCommand.cs",
               "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Application\\Commands\\Customers\\RegisterCustomerCommand.cs",
               "RelativeDocumentMoniker": "..\\CoreBanking.Application\\Commands\\Customers\\RegisterCustomerCommand.cs",
@@ -503,7 +516,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 23,
               "Title": "UpdateCustomerCommand.cs",
               "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Application\\Commands\\Customers\\UpdateCustomerCommand.cs",
               "RelativeDocumentMoniker": "..\\CoreBanking.Application\\Commands\\Customers\\UpdateCustomerCommand.cs",
@@ -516,7 +529,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 24,
               "Title": "CustomersController.cs",
               "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Api\\Controllers\\CustomersController.cs",
               "RelativeDocumentMoniker": "Controllers\\CustomersController.cs",
@@ -529,7 +542,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 26,
+              "DocumentIndex": 27,
               "Title": "CustomerRepository.cs",
               "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Infrastructure\\Repositories\\CustomerRepository.cs",
               "RelativeDocumentMoniker": "..\\CoreBanking.Infrastructure\\Repositories\\CustomerRepository.cs",
@@ -542,7 +555,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 25,
               "Title": "AuthController.cs",
               "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Api\\Controllers\\AuthController.cs",
               "RelativeDocumentMoniker": "Controllers\\AuthController.cs",
@@ -555,7 +568,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
+              "DocumentIndex": 26,
               "Title": "UpdateCustomerCommandHandler.cs",
               "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Application\\Commands\\Customers\\UpdateCustomerCommandHandler.cs",
               "RelativeDocumentMoniker": "..\\CoreBanking.Application\\Commands\\Customers\\UpdateCustomerCommandHandler.cs",
@@ -568,7 +581,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
+              "DocumentIndex": 28,
               "Title": "CurrentUserService.cs",
               "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Infrastructure\\Services\\CurrentUserService.cs",
               "RelativeDocumentMoniker": "..\\CoreBanking.Infrastructure\\Services\\CurrentUserService.cs",
@@ -580,7 +593,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 29,
               "Title": "IJwtServices.cs",
               "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Application\\Interfaces\\IJwtServices.cs",
               "RelativeDocumentMoniker": "..\\CoreBanking.Application\\Interfaces\\IJwtServices.cs",
@@ -601,19 +614,6 @@
               "ViewState": "AgIAADcAAACAZmZmZmYkwDwAAABOAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-02-16T12:37:03.406Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 29,
-              "Title": "UserRepository.cs",
-              "DocumentMoniker": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Infrastructure\\Repositories\\UserRepository.cs",
-              "RelativeDocumentMoniker": "..\\CoreBanking.Infrastructure\\Repositories\\UserRepository.cs",
-              "ToolTip": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Infrastructure\\Repositories\\UserRepository.cs",
-              "RelativeToolTip": "..\\CoreBanking.Infrastructure\\Repositories\\UserRepository.cs",
-              "ViewState": "AgIAABQAAACgmZmZmZktwBYAAAAIAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-17T17:50:44.434Z",
-              "EditorCaption": ""
             },
             {
               "$type": "Document",
