@@ -4,6 +4,7 @@ using MediatR;
 using CoreBanking.Domain.Common.Exceptions;
 using System;
 using CoreBanking.Domain.Common.Responses;
+using CoreBanking.Domain.Enums;
 
 
 namespace CoreBanking.Application.Commands.Auth
@@ -42,7 +43,7 @@ namespace CoreBanking.Application.Commands.Auth
                     Username = request.Username,
                     Email = request.Email,
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
-                    Role = request.Role,
+                    Role = UserRole.Customer,
                     OtpCode = otpCode,
                     ExpirationTime = DateTime.UtcNow.AddMinutes(5)
                 };
@@ -64,7 +65,7 @@ namespace CoreBanking.Application.Commands.Auth
                     Id = pendingUser.Id,
                     Email = pendingUser.Email,
                     Username = pendingUser.Username,
-                    Role = pendingUser.Role,
+                    Role = UserRole.Customer,
                     Otp = otpCode
                 };
 

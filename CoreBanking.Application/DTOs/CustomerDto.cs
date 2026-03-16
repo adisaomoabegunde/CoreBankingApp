@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CoreBanking.Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,7 +17,7 @@ namespace CoreBanking.Application.DTOs
         public DateTime DateOfBirth { get; set; }
         public string Address { get; set; }
         public string BVN { get; set; }
-        public string KYCStatus { get; set; }
+        public KycStatus KYCStatus { get; set; }
         public DateTime CreatedAt {  get; set; }
     }
 }
