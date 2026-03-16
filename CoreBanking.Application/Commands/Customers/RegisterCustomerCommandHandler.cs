@@ -42,7 +42,7 @@ namespace CoreBanking.Application.Commands.Customers
                     DateOfBirth = request.DateOfBirth,
                     Address = request.Address,
                     BVN = request.BVN,
-                    KYCStatus = "Pending"
+                    KYCStatus = Domain.Enums.KycStatus.Pending
                 };
                 await _customerRepository.AddAsync(customer);
 

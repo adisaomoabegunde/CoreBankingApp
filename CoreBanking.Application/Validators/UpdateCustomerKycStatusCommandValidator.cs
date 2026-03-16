@@ -14,7 +14,6 @@ namespace CoreBanking.Application.Validators
         {
             RuleFor(x => x.KycStatus)
                 .NotEmpty()
-                .Must(x => x == "Pending" || x == "Verified" || x == "Rejected")
                 .WithMessage("KYC status must be Pending, Verified or Rejected");
         }
     }

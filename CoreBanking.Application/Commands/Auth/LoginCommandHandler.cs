@@ -89,7 +89,7 @@ namespace CoreBanking.Application.Commands.Auth
                 {
                     Token = token,
                     Username = user.Username,
-                    Role = user.Role
+                    Role = user.Role.ToString()
                 };
 
                 return ApiResponse<AuthResponse>
