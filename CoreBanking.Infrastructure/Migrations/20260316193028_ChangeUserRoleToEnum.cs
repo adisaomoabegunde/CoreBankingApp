@@ -11,12 +11,17 @@ namespace CoreBanking.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(
+                @"UPDATE ""Users"" SET ""Role"" = 'Customer' WHERE ""Role"" IS NULL OR ""Role"" NOT IN ('Customer', 'Admin');"
+            );
+
+            migrationBuilder.Sql(
                 @"ALTER TABLE ""Users""
           ALTER COLUMN ""Role""
           TYPE integer
           USING CASE
                 WHEN ""Role"" = 'Customer' THEN 0
                 WHEN ""Role"" = 'Admin' THEN 1
+                ELSE 0
           END;"
             );
         }
