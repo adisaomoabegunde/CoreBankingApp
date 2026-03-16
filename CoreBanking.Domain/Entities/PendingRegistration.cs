@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CoreBanking.Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,7 @@ namespace CoreBanking.Domain.Entities
         public string Username { get; set; }
         public string Email { get; set; }
         public string PasswordHash { get; set; }
-        public string Role { get; set; }
+        public UserRole Role { get; set; }
         public string OtpCode { get; set; }
         public DateTime ExpirationTime { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

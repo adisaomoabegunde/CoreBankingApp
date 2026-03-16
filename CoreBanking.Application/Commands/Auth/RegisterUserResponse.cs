@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CoreBanking.Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +12,7 @@ namespace CoreBanking.Application.Commands.Auth
         public Guid Id { get; set; }
         public string Username { get; set; } = default!;
         public string Email { get; set; } = default!;
-        public string Role { get; set; } = default!;
+        public UserRole Role { get; set; } = default!;
         public string Otp {  get; set; } = default!;
     }
 }
