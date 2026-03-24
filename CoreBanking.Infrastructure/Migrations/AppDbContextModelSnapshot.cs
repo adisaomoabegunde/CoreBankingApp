@@ -22,6 +22,54 @@ namespace CoreBanking.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("CoreBanking.Domain.Entities.Account", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AccountNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("AccountType")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Balance")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("Currency")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("DailyTransferlimit")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime>("DateOpened")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("InterestRate")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime?>("LastTransactionDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("MinimumBalance")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountNumber")
+                        .IsUnique();
+
+                    b.ToTable("Accounts");
+                });
+
             modelBuilder.Entity("CoreBanking.Domain.Entities.AuditLog", b =>
                 {
                     b.Property<Guid>("Id")
