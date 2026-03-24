@@ -44,6 +44,12 @@ public partial class Program {
             builder.WebHost.UseUrls($"http://+:{port}");
         }
 
+        builder.Logging.ClearProviders();
+        builder.Logging.AddConsole();
+        builder.Logging.AddDebug();
+
+
+
         builder.Services.AddControllers();
         builder.Services.AddHealthChecks();
         builder.Services.AddEndpointsApiExplorer();
@@ -59,6 +65,8 @@ public partial class Program {
         builder.Services.AddScoped<IPendingRegistrationRepository, PendingRegistrationRepository>();
         builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
         builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+        builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+        builder.Services.AddScoped<IAccountNumberGenerator, AccountNumberGenerator>();
 
         builder.Services.AddMediatR(typeof(RegisterUserCommand).Assembly);
         builder.Services.AddValidatorsFromAssembly(typeof(RegisterUserValidator).Assembly);
@@ -172,6 +180,8 @@ public partial class Program {
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             db.Database.Migrate();
         }
+
+        app.UseMiddleware<RequestLoggingMiddleware>();
 
         // Swagger available in all environments (useful for testing on Render)
         app.UseSwagger();

@@ -17,12 +17,20 @@ namespace CoreBanking.Infrastructure.Persistence
         public DbSet<Otp> Otps { get; set; }
         public DbSet<PendingRegistration> PendingRegistrations { get; set; }
         public DbSet<Customer> Customers { get; set; }
+        public DbSet<Account> Accounts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<User>()
                 .HasIndex(x => x.Email)
                 .IsUnique();
+
+            builder.Entity<Account>()
+                .HasIndex(a => a.AccountNumber)
+                .IsUnique();
+            builder.Entity<PendingRegistration>()
+                .Property(x => x.Role)
+                .HasConversion<int>();
 
             base.OnModelCreating(builder);
 
