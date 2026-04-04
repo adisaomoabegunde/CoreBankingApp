@@ -63,5 +63,14 @@ namespace CoreBanking.Infrastructure.Persistence.Repositories
 
             return (data, totalRecords);
         }
+
+        public async Task<List<LedgerEntry>> GetByDateRangeAsync(
+            DateTime start,
+            DateTime end)
+                {
+                    return await _context.LedgerEntries
+                        .Where(l => l.CreatedAt >= start && l.CreatedAt < end)
+                        .ToListAsync();
+                }
     }
 }

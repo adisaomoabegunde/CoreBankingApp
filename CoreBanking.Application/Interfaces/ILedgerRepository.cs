@@ -12,4 +12,7 @@ public interface ILedgerRepository
         int pageNumber,
         int pageSize
     );
+
+    Task<List<LedgerEntry>> GetByDateRangeAsync(DateTime start, DateTime end);
+
 }

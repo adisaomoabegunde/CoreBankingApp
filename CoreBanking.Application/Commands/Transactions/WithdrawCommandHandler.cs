@@ -17,15 +17,17 @@ namespace CoreBanking.Application.Commands.Transactions
         private readonly ITransactionRepository _transactionRepository;
         private readonly ICustomerRepository _customerRepository;
         private readonly ICurrentUserService _currentUser;
+        private readonly IAuditRepository _auditRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<WithdrawCommandHandler> _logger;
 
-        public WithdrawCommandHandler(IAccountRepository accountRepository, ITransactionRepository transactionRepository, ICustomerRepository customerRepository, ICurrentUserService currentUser, IUnitOfWork unitOfWork, ILogger<WithdrawCommandHandler> logger)
+        public WithdrawCommandHandler(IAccountRepository accountRepository, ITransactionRepository transactionRepository, ICustomerRepository customerRepository, ICurrentUserService currentUser,IAuditRepository auditRepository, IUnitOfWork unitOfWork, ILogger<WithdrawCommandHandler> logger)
         {
             _accountRepository = accountRepository;
             _transactionRepository = transactionRepository;
             _customerRepository = customerRepository;
             _currentUser = currentUser;
+            _auditRepository = auditRepository;
             _unitOfWork = unitOfWork;
             _logger = logger;
             
@@ -120,6 +122,16 @@ namespace CoreBanking.Application.Commands.Transactions
 
                 await _transactionRepository.SaveChangesAsync();
 
+                await _auditRepository.AddAsync(new AuditLog
+                {
+                    UserId = _currentUser.UserId,
+                    Action = "Withdrawal",
+                    IpAddress = _currentUser.IpAdress,
+                    Description = $"Withdrew ₦{request.Amount} from account {account.AccountNumber}",
+                    Timestamp = DateTime.UtcNow
+                });
+
+
                 await _unitOfWork.CommitAsync();
 
                 _logger.LogInformation("Withdrawal successfulll: {Reference}", reference);
@@ -131,6 +143,18 @@ namespace CoreBanking.Application.Commands.Transactions
                 await _unitOfWork.RollbackAsync();
 
                 _logger.LogError(ex, "Withdrawal failed");
+
+
+                await _auditRepository.AddAsync(new AuditLog
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = _currentUser.UserId,
+                    Action = "Withdrawal-Failed",
+                    IpAddress = _currentUser.IpAdress ?? "Unknown",
+                    Description = $"Failed Withdrawal attempt of ₦{request.Amount}  from {request.AccountNumber}",
+                    Timestamp = DateTime.UtcNow
+                });
+
 
                 return ApiResponse<string>
                     .InternalServerError("Withdrawal failed");

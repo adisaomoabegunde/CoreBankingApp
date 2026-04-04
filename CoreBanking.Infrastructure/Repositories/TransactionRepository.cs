@@ -1,5 +1,7 @@
-﻿using CoreBanking.Application.Interfaces;
+﻿using CoreBanking.Application.DTOs;
+using CoreBanking.Application.Interfaces;
 using CoreBanking.Domain.Entities;
+using CoreBanking.Domain.Enums;
 using CoreBanking.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -96,6 +98,16 @@ namespace CoreBanking.Infrastructure.Repositories
             return await _context.Transactions
                 .FirstOrDefaultAsync(t => t.TransactionReference == reference);
         }
+
+        public async Task<List<Transaction>> GetByDateRangeAsync(
+            DateTime start,
+            DateTime end)
+                {
+                    return await _context.Transactions
+                        .Where(t => t.TransactionDate >= start && t.TransactionDate < end)
+                        .ToListAsync();
+                }
+
 
         public async Task SaveChangesAsync()
         {
