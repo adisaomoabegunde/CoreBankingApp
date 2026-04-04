@@ -61,5 +61,22 @@ namespace CoreBanking.Infrastructure.Repositories
             _context.Accounts.Update(account);
             await _context.SaveChangesAsync();
         }
+        public async Task<Account?> GetByAccountNumberForUpdateAsync(string accountNumber)
+        {
+            return await _context.Accounts
+                .Where(a => a.AccountNumber == accountNumber)
+                .FirstOrDefaultAsync();
+        }
+        public async Task<Account?> GetByIdAsync(Guid id)
+        {
+            return await _context.Accounts
+                .FirstOrDefaultAsync(a => a.Id == id);
+        }
+
+        public async Task<bool> IsOwnedByCustomer(Guid accountId, Guid customerId)
+        {
+            return await _context.Accounts
+                .AnyAsync(a => a.Id == accountId && a.CustomerId == customerId);
+        }
     }
 }
