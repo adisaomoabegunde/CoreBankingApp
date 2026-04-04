@@ -78,5 +78,24 @@ namespace CoreBanking.Infrastructure.Repositories
             return await _context.Accounts
                 .AnyAsync(a => a.Id == accountId && a.CustomerId == customerId);
         }
+
+        public async Task<(List<Account>, int)> GetAllWithPaginationAsync(
+            int pageNumber,
+            int pageSize)
+                {
+                    var query = _context.Accounts
+                        .Include(a => a.Customer) // 👈 IMPORTANT for name
+                        .AsQueryable();
+
+                    var totalRecords = await query.CountAsync();
+
+                    var data = await query
+                        .OrderByDescending(a => a.DateOpened)
+                        .Skip((pageNumber - 1) * pageSize)
+                        .Take(pageSize)
+                        .ToListAsync();
+
+                    return (data, totalRecords);
+                }
     }
 }

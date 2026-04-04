@@ -12,6 +12,7 @@ namespace CoreBanking.Domain.Entities
         public Guid Id { get; set; }
         public string AccountNumber { get; set; } = default!;
         public Guid CustomerId { get; set; }
+        public Customer Customer { get; set; }
         public AccountType AccountType { get; set; }
         public decimal Balance { get; set; }
         public Currency Currency { get; set; }
@@ -21,6 +22,7 @@ namespace CoreBanking.Domain.Entities
         public decimal InterestRate { get; set; }
         public DateTime DateOpened { get; set; }
         public DateTime? LastTransactionDate {  get; set; }
+      
         public byte[] RowVersion { get; set; }
 
     }

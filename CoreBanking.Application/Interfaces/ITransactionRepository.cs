@@ -1,4 +1,5 @@
-﻿using CoreBanking.Domain.Entities;
+﻿using CoreBanking.Application.DTOs;
+using CoreBanking.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,7 @@ namespace CoreBanking.Application.Interfaces
             int pageSize
             );
         Task<Transaction?> GetByReferenceAsync(string reference);
+        Task<List<Transaction>> GetByDateRangeAsync(DateTime start, DateTime end);
 
         Task SaveChangesAsync();
     }

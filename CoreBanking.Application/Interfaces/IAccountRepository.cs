@@ -20,6 +20,7 @@ namespace CoreBanking.Application.Interfaces
         Task UpdateAsync(Account account);
         Task<Account?> GetByIdAsync(Guid id); 
 
+        Task <(List<Account>, int)> GetAllWithPaginationAsync(int pageNumber, int pageSize);
         Task<bool> IsOwnedByCustomer(Guid accountId, Guid customerId);
 
     }

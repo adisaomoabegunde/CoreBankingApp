@@ -17,14 +17,16 @@ namespace CoreBanking.Application.Commands.Transactions
         private readonly ITransactionRepository _transactionRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUser;
+        private readonly IAuditRepository _auditRepository;
         private readonly ILogger<DepositCommandHandler> _logger;
 
-        public DepositCommandHandler(IAccountRepository accountRepository, ITransactionRepository transactionRepository, IUnitOfWork unitOfWork, ICurrentUserService currentUser, ILogger<DepositCommandHandler> logger)
+        public DepositCommandHandler(IAccountRepository accountRepository, ITransactionRepository transactionRepository, IUnitOfWork unitOfWork, ICurrentUserService currentUser,IAuditRepository auditRepository, ILogger<DepositCommandHandler> logger)
         {
             _accountRepository = accountRepository;
             _transactionRepository = transactionRepository;
             _unitOfWork = unitOfWork;
             _currentUser = currentUser;
+            _auditRepository = auditRepository;
             _logger = logger;
         }
 
@@ -99,6 +101,16 @@ namespace CoreBanking.Application.Commands.Transactions
 
                 await _transactionRepository.SaveChangesAsync();
 
+
+                await _auditRepository.AddAsync(new AuditLog
+                {
+                    UserId = _currentUser.UserId,
+                    Action = "Deposit",
+                    IpAddress = _currentUser.IpAdress,
+                    Description = $"Deposited ₦{request.Amount} into account {account.AccountNumber}",
+                    Timestamp = DateTime.UtcNow
+                });
+
                 await _unitOfWork.CommitAsync();
 
                 _logger.LogInformation("Deposit successfull: {Reference}", reference);
@@ -112,6 +124,16 @@ namespace CoreBanking.Application.Commands.Transactions
                 await _unitOfWork.RollbackAsync();
 
                 _logger.LogError(ex, "Deposit failed");
+
+                await _auditRepository.AddAsync(new AuditLog
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = _currentUser.UserId,
+                    Action = "Deposit-Failed",
+                    IpAddress = _currentUser.IpAdress ?? "Unknown",
+                    Description = $"Failed Deposit attempt of ₦{request.Amount}  to {request.AccountNumber}",
+                    Timestamp = DateTime.UtcNow
+                });
 
                 return ApiResponse<string>
                     .InternalServerError("Deposit failed");

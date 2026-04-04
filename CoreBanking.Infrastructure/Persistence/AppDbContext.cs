@@ -119,6 +119,11 @@ namespace CoreBanking.Infrastructure.Persistence
                 .WithMany(t => t.LedgerEntries)
                 .HasForeignKey(l => l.TransactionId)
                 .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<Account>()
+                .HasOne(a => a.Customer)
+                .WithMany(c => c.Accounts)
+                .HasForeignKey(a => a.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict);
 
         }
 

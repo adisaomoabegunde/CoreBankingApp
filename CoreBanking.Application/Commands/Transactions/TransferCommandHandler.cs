@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,15 +16,19 @@ namespace CoreBanking.Application.Commands.Transactions
     public class TransferCommandHandler : IRequestHandler<TransferCommand, ApiResponse<string>>
     {
         private readonly IAccountRepository _accountRepository;
+        private readonly IAuditRepository _auditRepository;
+        private readonly ICurrentUserService _currentUser;
         private readonly ITransactionRepository _transactionRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<TransferCommandHandler> _logger;
 
-        public TransferCommandHandler(IAccountRepository accountRepository, ITransactionRepository transactionRepository, IUnitOfWork unitOfWork, ILogger<TransferCommandHandler> logger)
+        public TransferCommandHandler(IAccountRepository accountRepository, ITransactionRepository transactionRepository,IAuditRepository auditRepository, ICurrentUserService currentUser, IUnitOfWork unitOfWork, ILogger<TransferCommandHandler> logger)
         {
             _accountRepository = accountRepository;
             _transactionRepository = transactionRepository;
             _unitOfWork = unitOfWork;
+            _currentUser = currentUser;
+            _auditRepository = auditRepository;
             _logger = logger;
         }
 
@@ -76,6 +81,7 @@ namespace CoreBanking.Application.Commands.Transactions
                 }
 
                 var reference = GenerateReference();
+             
 
                 var sourceBefore = source.Balance;
                 var destBefore = destination.Balance;
@@ -131,16 +137,38 @@ namespace CoreBanking.Application.Commands.Transactions
                 await _transactionRepository.AddRangeAsync(new[] { debitEntry, creditEntry });
                 
                 await _transactionRepository.SaveChangesAsync();
+
+
+                await _auditRepository.AddAsync(new AuditLog
+                {
+                    UserId = _currentUser.UserId,
+                    Action = "Transfer",
+                    IpAddress = _currentUser.IpAdress,
+                    Description = $"Transferred ₦{request.Amount} from {source.AccountNumber} to {destination.AccountNumber}",
+                    Timestamp = DateTime.UtcNow
+                });
                 await _unitOfWork.CommitAsync();
 
                 _logger.LogInformation("Transfer successful: {Reference}", reference);
                 return ApiResponse<string>.SuccessResponse(reference, "Transfer successful");
+
+               
 
             }
             catch (Exception ex)
             {
                 await _unitOfWork.RollbackAsync();
                 _logger.LogError(ex, "Transfer failed");
+
+                await _auditRepository.AddAsync(new AuditLog
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = _currentUser.UserId,
+                    Action = "Transfer-Failed",
+                    IpAddress = _currentUser.IpAdress ?? "Unknown",
+                    Description = $"Failed transfer attempt of ₦{request.Amount} from {request.SourceAccountNumber} to {request.DestinationAccountNumber}",
+                    Timestamp = DateTime.UtcNow
+                });
 
                 return ApiResponse<string>.InternalServerError("Transfer failed");
 
