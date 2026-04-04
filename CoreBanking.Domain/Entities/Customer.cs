@@ -21,5 +21,6 @@ namespace CoreBanking.Domain.Entities
         public KycStatus KYCStatus { get; set; } 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
+        public ICollection<Account> Accounts { get; set; }
     }
 }

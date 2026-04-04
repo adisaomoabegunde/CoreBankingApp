@@ -10,5 +10,12 @@ namespace CoreBanking.Application.Interfaces
     public interface IAuditRepository
     {
         Task AddAsync(AuditLog auditLog);
-    }
+        Task<(List<AuditLog>, int)> GetAuditLogsAsync(
+            Guid? userId,
+            string? action,
+            DateTime? fromDate,
+            DateTime? toDate,
+            int pageNumber,
+            int pageSize);
+            }
 }

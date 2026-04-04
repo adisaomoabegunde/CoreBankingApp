@@ -16,13 +16,17 @@ namespace CoreBanking.Application.Commands.Transactions
     {
         private readonly ITransactionRepository _transactionRepository;
         private readonly IAccountRepository _accountRepository;
+        private readonly ICurrentUserService _currentUser;
+        private readonly IAuditRepository _auditRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<ReverseTransactionCommandHandler> _logger;
 
-        public ReverseTransactionCommandHandler(ITransactionRepository transactionRepository, IAccountRepository accountRepository, IUnitOfWork unitOfWork, ILogger<ReverseTransactionCommandHandler> logger)
+        public ReverseTransactionCommandHandler(ITransactionRepository transactionRepository, IAccountRepository accountRepository,ICurrentUserService currentUser, IAuditRepository auditRepository, IUnitOfWork unitOfWork, ILogger<ReverseTransactionCommandHandler> logger)
         {
             _transactionRepository = transactionRepository;
             _accountRepository = accountRepository;
+            _currentUser = currentUser;
+            _auditRepository = auditRepository;
             _unitOfWork = unitOfWork;
             _logger = logger;
         }
@@ -101,6 +105,15 @@ namespace CoreBanking.Application.Commands.Transactions
                 await _transactionRepository.AddRangeAsync(ledgerEntries);
                 await _transactionRepository.SaveChangesAsync();
 
+                await _auditRepository.AddAsync(new AuditLog
+                {
+                    UserId = _currentUser.UserId,
+                    Action = "Reversal",
+                    IpAddress = _currentUser.IpAdress,
+                    Description = $"Reversed transaction {request.Reference}",
+                    Timestamp = DateTime.UtcNow
+                });
+
                 await _unitOfWork.CommitAsync();
 
                 _logger.LogInformation("Transaction reversal successful for reference: {Reference}", reversalRef);
@@ -110,6 +123,17 @@ namespace CoreBanking.Application.Commands.Transactions
             {
                 await _unitOfWork.RollbackAsync();
                 _logger.LogError(ex, "Error occurred while reversing transaction with reference: {Reference}", request.Reference);
+
+                await _auditRepository.AddAsync(new AuditLog
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = _currentUser.UserId,
+                    Action = "Reversal-Failed",
+                    IpAddress = _currentUser.IpAdress ?? "Unknown",
+                    Description = $"Failed Reversal attempt of  {request.Reference}",
+                    Timestamp = DateTime.UtcNow
+                });
+
                 return ApiResponse<string>.InternalServerError( ex.InnerException?.Message ?? ex.Message);
             }
         }

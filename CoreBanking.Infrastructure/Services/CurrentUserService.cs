@@ -34,5 +34,7 @@ namespace CoreBanking.Infrastructure.Services
                 return Guid.Parse(userId);
             }
         }
+        public string Role => _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Role)?.Value;
+        public string IpAdress => _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString();
     }
 }
