@@ -33,7 +33,7 @@ namespace CoreBanking.Application.Queries.Accounts
                 _logger.LogInformation("Fetching account details for user {userId} and account {accountNumber}", userId, request.AccountNumber);
 
                 var account = await _accountRepository
-                    .GetbyAccountNumberAsync(request.AccountNumber);
+                    .GetByAccountNumberAsync(request.AccountNumber);
                 if (account == null)
                 {
                     _logger.LogWarning("Account not found: {AccountNumber}", request.AccountNumber);

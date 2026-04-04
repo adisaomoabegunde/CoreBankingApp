@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CoreBanking.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260326190226_FixPendingRegistrationRoleType")]
-    partial class FixPendingRegistrationRoleType
+    [Migration("20260403132421_AddTransactionSelfReference")]
+    partial class AddTransactionSelfReference
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -61,6 +61,12 @@ namespace CoreBanking.Infrastructure.Migrations
 
                     b.Property<decimal>("MinimumBalance")
                         .HasColumnType("numeric");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -152,6 +158,44 @@ namespace CoreBanking.Infrastructure.Migrations
                     b.ToTable("Customers");
                 });
 
+            modelBuilder.Entity("CoreBanking.Domain.Entities.LedgerEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2");
+
+                    b.Property<decimal>("BalanceAfter")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("BalanceBefore")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("EntryType")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("TransactionId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TransactionId");
+
+                    b.ToTable("LedgerEntries");
+                });
+
             modelBuilder.Entity("CoreBanking.Domain.Entities.Otp", b =>
                 {
                     b.Property<Guid>("Id")
@@ -236,6 +280,80 @@ namespace CoreBanking.Infrastructure.Migrations
                     b.ToTable("RevokedTokens");
                 });
 
+            modelBuilder.Entity("CoreBanking.Domain.Entities.Transaction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("BalanceAfter")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("DestinationAccountId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("IdempotencyKey")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsReversed")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("ProcessedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ReversedTransactionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ReversedTransactionId1")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("SourceAccountId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("TransactionDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("TransactionReference")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("TransactionType")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DestinationAccountId");
+
+                    b.HasIndex("IdempotencyKey")
+                        .IsUnique();
+
+                    b.HasIndex("ReversedTransactionId");
+
+                    b.HasIndex("ReversedTransactionId1");
+
+                    b.HasIndex("SourceAccountId");
+
+                    b.HasIndex("TransactionReference")
+                        .IsUnique();
+
+                    b.ToTable("Transactions");
+                });
+
             modelBuilder.Entity("CoreBanking.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -272,6 +390,43 @@ namespace CoreBanking.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("CoreBanking.Domain.Entities.LedgerEntry", b =>
+                {
+                    b.HasOne("CoreBanking.Domain.Entities.Transaction", null)
+                        .WithMany()
+                        .HasForeignKey("TransactionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CoreBanking.Domain.Entities.Transaction", b =>
+                {
+                    b.HasOne("CoreBanking.Domain.Entities.Account", "DestinationAccount")
+                        .WithMany()
+                        .HasForeignKey("DestinationAccountId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CoreBanking.Domain.Entities.Transaction", null)
+                        .WithMany()
+                        .HasForeignKey("ReversedTransactionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CoreBanking.Domain.Entities.Transaction", "ReversedTransaction")
+                        .WithMany()
+                        .HasForeignKey("ReversedTransactionId1");
+
+                    b.HasOne("CoreBanking.Domain.Entities.Account", "SourceAccount")
+                        .WithMany()
+                        .HasForeignKey("SourceAccountId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("DestinationAccount");
+
+                    b.Navigation("ReversedTransaction");
+
+                    b.Navigation("SourceAccount");
                 });
 #pragma warning restore 612, 618
         }

@@ -21,5 +21,7 @@ namespace CoreBanking.Domain.Entities
         public decimal InterestRate { get; set; }
         public DateTime DateOpened { get; set; }
         public DateTime? LastTransactionDate {  get; set; }
+        public byte[] RowVersion { get; set; }
+
     }
 }

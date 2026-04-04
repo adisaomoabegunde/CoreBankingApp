@@ -1,5 +1,6 @@
 using CoreBanking.Application.Commands.Customers;
 using CoreBanking.Application.Queries.Customers;
+using CoreBanking.Application.Queries.Transactions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -174,6 +175,44 @@ namespace CoreBanking.Api.Controllers
         public async Task<IActionResult> GetCurrentCustomer()
         {
             var result = await _mediator.Send(new GetCurrentCustomerQuery());
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Generates an account statement for the specified account.
+        /// </summary>
+        /// <remarks>
+        /// Returns a paginated statement showing all transactions (credits and debits) for the given account.
+        /// Results can be filtered by date range. Includes opening balance, closing balance, and individual transaction entries.
+        /// </remarks>
+        /// <param name="accountNumber">The 10-digit account number.</param>
+        /// <param name="fromDate">Optional start date filter (inclusive).</param>
+        /// <param name="toDate">Optional end date filter (inclusive).</param>
+        /// <param name="pageNumber">Page number for pagination (default: 1).</param>
+        /// <param name="pageSize">Number of records per page (default: 10).</param>
+        /// <returns>A paginated account statement with transaction entries.</returns>
+        /// <response code="200">Account statement generated successfully.</response>
+        /// <response code="401">User is not authenticated.</response>
+        /// <response code="404">Account not found.</response>
+        /// <response code="500">An unexpected server error occurred.</response>
+        [Authorize]
+        [HttpGet("{accountNumber}/statement")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetStatement(string accountNumber, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        {
+            var query = new GetAccountStatementQuery
+            {
+                AccountNumber = accountNumber,
+                FromDate = fromDate,
+                ToDate = toDate,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+
+            var result = await _mediator.Send(query);
             return Ok(result);
         }
     }

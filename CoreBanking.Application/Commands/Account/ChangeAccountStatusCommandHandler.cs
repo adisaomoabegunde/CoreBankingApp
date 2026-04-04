@@ -28,7 +28,7 @@ namespace CoreBanking.Application.Commands.Account
             {
                 _logger.LogInformation("Changing account status. AccountNumber: {AccountNumber}, NewStatus: {NewStatus}", request.AccountNumber, request.Status);
 
-                var account = await _accountRepository.GetbyAccountNumberAsync(request.AccountNumber);
+                var account = await _accountRepository.GetByAccountNumberAsync(request.AccountNumber);
                 if (account == null)
                 {
                     _logger.LogWarning("Account not found. AccountNumber: {AccountNumber}", request.AccountNumber);

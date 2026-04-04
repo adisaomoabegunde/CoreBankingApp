@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using CoreBanking.Application.Commands.Customers;
+using CoreBanking.Infrastructure.Persistence.Repositories;
 
 // Make Program accessible for integration tests
 
@@ -67,6 +68,9 @@ public partial class Program {
         builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
         builder.Services.AddScoped<IAccountRepository, AccountRepository>();
         builder.Services.AddScoped<IAccountNumberGenerator, AccountNumberGenerator>();
+        builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+        builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+        builder.Services.AddScoped<ILedgerRepository, LedgerRepository>();
 
         builder.Services.AddMediatR(typeof(RegisterUserCommand).Assembly);
         builder.Services.AddValidatorsFromAssembly(typeof(RegisterUserValidator).Assembly);
