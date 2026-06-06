@@ -1,4 +1,5 @@
-﻿using CoreBanking.Application.Interfaces;
+﻿using CoreBanking.Application.Events;
+using CoreBanking.Application.Interfaces;
 using CoreBanking.Domain.Common.Responses;
 using CoreBanking.Domain.Entities;
 using CoreBanking.Domain.Enums;
@@ -20,8 +21,9 @@ namespace CoreBanking.Application.Commands.Transactions
         private readonly IAuditRepository _auditRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<ReverseTransactionCommandHandler> _logger;
+        private readonly IEventProducer _eventProducer;
 
-        public ReverseTransactionCommandHandler(ITransactionRepository transactionRepository, IAccountRepository accountRepository,ICurrentUserService currentUser, IAuditRepository auditRepository, IUnitOfWork unitOfWork, ILogger<ReverseTransactionCommandHandler> logger)
+        public ReverseTransactionCommandHandler(ITransactionRepository transactionRepository, IAccountRepository accountRepository,ICurrentUserService currentUser, IAuditRepository auditRepository, IUnitOfWork unitOfWork, ILogger<ReverseTransactionCommandHandler> logger, IEventProducer eventProducer)
         {
             _transactionRepository = transactionRepository;
             _accountRepository = accountRepository;
@@ -29,6 +31,7 @@ namespace CoreBanking.Application.Commands.Transactions
             _auditRepository = auditRepository;
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _eventProducer = eventProducer;
         }
         public async Task<ApiResponse<string>> Handle(ReverseTransactionCommand request, CancellationToken cancellationToken)
         {
@@ -115,6 +118,24 @@ namespace CoreBanking.Application.Commands.Transactions
                 });
 
                 await _unitOfWork.CommitAsync();
+
+
+                try
+                {
+                    await _eventProducer.PublishAsync("transaction.reversed", new TransactionReversedEvent
+                    {
+                        AccountId = transaction.SourceAccountId ?? transaction.DestinationAccountId.Value,
+                        Amount = transaction.Amount,
+                        Reference = transaction.TransactionReference,
+                        ReversedAt = DateTime.UtcNow,
+                        TransactionType = transaction.TransactionType
+                    });
+                }
+                catch(Exception kafkaEx)
+                {
+                    _logger.LogError(kafkaEx, "Failed to publish transaction reversal event for reference: {Reference}", reversalRef);
+                }
+
 
                 _logger.LogInformation("Transaction reversal successful for reference: {Reference}", reversalRef);
                 return ApiResponse<string>.SuccessResponse(reversalRef, "Transaction reversed successfully");

@@ -174,7 +174,7 @@ public partial class Program {
 
         builder.Services.AddHttpContextAccessor();
 
-        builder.Services.AddAppDI();
+        builder.Services.AddAppDI(builder.Configuration);
 
         var app = builder.Build();
 
