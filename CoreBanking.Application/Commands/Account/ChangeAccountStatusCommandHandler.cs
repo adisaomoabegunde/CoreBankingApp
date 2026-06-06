@@ -1,4 +1,5 @@
-﻿using CoreBanking.Application.Interfaces;
+﻿using CoreBanking.Application.Events;
+using CoreBanking.Application.Interfaces;
 using CoreBanking.Domain.Common.Responses;
 using CoreBanking.Domain.Enums;
 using MediatR;
@@ -7,7 +8,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Confluent.Kafka;
 
 namespace CoreBanking.Application.Commands.Account
 {
@@ -15,11 +18,13 @@ namespace CoreBanking.Application.Commands.Account
     {
         private readonly IAccountRepository _accountRepository;
         private readonly ILogger<ChangeAccountStatusCommandHandler> _logger;
+        private readonly IEventProducer _eventProducer;
 
-        public ChangeAccountStatusCommandHandler(IAccountRepository accountRepository, ILogger<ChangeAccountStatusCommandHandler> logger)
+        public ChangeAccountStatusCommandHandler(IAccountRepository accountRepository, ILogger<ChangeAccountStatusCommandHandler> logger, IEventProducer eventProducer)
         {
             _accountRepository = accountRepository;
             _logger = logger;
+            _eventProducer = eventProducer;
         }
 
         public async Task<ApiResponse<string>> Handle(ChangeAccountStatusCommand request, CancellationToken cancellationToken)
@@ -56,7 +61,27 @@ namespace CoreBanking.Application.Commands.Account
 
                 await _accountRepository.UpdateAsync(account);
 
-                _logger.LogInformation("Account status changed successfully. AccountNumber: {AccountNumber}, NewStatus: {NewStatus}", request.AccountNumber, request.Status);
+                try
+                {
+                    await _eventProducer.PublishAsync("account.status.changed", new AccountStatusChangedEvent
+                    {
+                        AccountId = account.Id,
+                        AccountNumber = account.AccountNumber,
+                        OldStatus = account.Status,
+                        NewStatus = request.Status,
+                        Reference = $"Status-{DateTime.UtcNow.Ticks}"
+
+                    });
+
+                    _logger.LogInformation("Published account status changed event. AccountNumber: {AccountNumber}, NewStatus: {NewStatus}", request.AccountNumber, request.Status);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to publish account status changed event. AccountNumber: {AccountNumber}", request.AccountNumber);
+                }
+
+
+                    _logger.LogInformation("Account status changed successfully. AccountNumber: {AccountNumber}, NewStatus: {NewStatus}", request.AccountNumber, request.Status);
                 return ApiResponse<string>
                     .SuccessResponse($"Account status changed to {request.Status}");
             }

@@ -1,14 +1,16 @@
 {
   "version": 2,
-  "dgSpecHash": "9A7pCQ1PY4Y=",
+  "dgSpecHash": "cX75S/qdk1s=",
   "success": true,
-  "projectFilePath": "C:\\Users\\user\\OneDrive\\Desktop\\Corebankingapp\\CoreBanking.Application\\CoreBanking.Application.csproj",
+  "projectFilePath": "C:\\Projects\\Corebankingapp\\CoreBanking.Application\\CoreBanking.Application.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\user\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\bcrypt.net-next\\4.1.0\\bcrypt.net-next.4.1.0.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\confluent.kafka\\2.14.0\\confluent.kafka.2.14.0.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\fluentvalidation\\12.1.1\\fluentvalidation.12.1.1.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\fluentvalidation.dependencyinjectionextensions\\12.1.1\\fluentvalidation.dependencyinjectionextensions.12.1.1.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\librdkafka.redist\\2.14.0\\librdkafka.redist.2.14.0.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\mediatr\\11.0.0\\mediatr.11.0.0.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\mediatr.contracts\\1.0.1\\mediatr.contracts.1.0.1.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\mediatr.extensions.microsoft.dependencyinjection\\11.1.0\\mediatr.extensions.microsoft.dependencyinjection.11.1.0.nupkg.sha512",

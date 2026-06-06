@@ -1,4 +1,5 @@
-﻿using CoreBanking.Application.Interfaces;
+﻿using CoreBanking.Application.Events;
+using CoreBanking.Application.Interfaces;
 using CoreBanking.Domain.Common.Responses;
 using CoreBanking.Domain.Entities;
 using CoreBanking.Domain.Enums;
@@ -21,8 +22,9 @@ namespace CoreBanking.Application.Commands.Transactions
         private readonly ITransactionRepository _transactionRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<TransferCommandHandler> _logger;
+        private readonly IEventProducer  _eventProducer;
 
-        public TransferCommandHandler(IAccountRepository accountRepository, ITransactionRepository transactionRepository,IAuditRepository auditRepository, ICurrentUserService currentUser, IUnitOfWork unitOfWork, ILogger<TransferCommandHandler> logger)
+        public TransferCommandHandler(IAccountRepository accountRepository, ITransactionRepository transactionRepository,IAuditRepository auditRepository, ICurrentUserService currentUser, IUnitOfWork unitOfWork, ILogger<TransferCommandHandler> logger, IEventProducer eventProducer)
         {
             _accountRepository = accountRepository;
             _transactionRepository = transactionRepository;
@@ -30,6 +32,7 @@ namespace CoreBanking.Application.Commands.Transactions
             _currentUser = currentUser;
             _auditRepository = auditRepository;
             _logger = logger;
+            _eventProducer = eventProducer;
         }
 
         public async Task<ApiResponse<string>> Handle(TransferCommand request, CancellationToken cancellationToken)
@@ -136,18 +139,31 @@ namespace CoreBanking.Application.Commands.Transactions
                 await _transactionRepository.AddAsync(transaction);
                 await _transactionRepository.AddRangeAsync(new[] { debitEntry, creditEntry });
                 
+                
+
+
+                
+
                 await _transactionRepository.SaveChangesAsync();
-
-
-                await _auditRepository.AddAsync(new AuditLog
-                {
-                    UserId = _currentUser.UserId,
-                    Action = "Transfer",
-                    IpAddress = _currentUser.IpAdress,
-                    Description = $"Transferred ₦{request.Amount} from {source.AccountNumber} to {destination.AccountNumber}",
-                    Timestamp = DateTime.UtcNow
-                });
                 await _unitOfWork.CommitAsync();
+
+                try
+                {
+                    var transferEvent = new TransferCompletedEvent
+                    {
+                        TransactionId = transaction.Id,
+                        Reference = transaction.TransactionReference,
+                        SourceAccountId = source.Id,
+                        DestinationAccountId = destination.Id,
+                        Amount = transaction.Amount,
+                        TransactionType = TransactionType.Transfer,
+                        OccurredAt = DateTime.UtcNow
+                    };
+                    await _eventProducer.PublishAsync("transfer.completed", transferEvent);
+                }catch(Exception KafkaEx)
+                {
+                    _logger.LogError(KafkaEx, "Failed to publish transfer event for {Reference}", reference);
+                }
 
                 _logger.LogInformation("Transfer successful: {Reference}", reference);
                 return ApiResponse<string>.SuccessResponse(reference, "Transfer successful");

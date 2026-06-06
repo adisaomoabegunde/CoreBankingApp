@@ -1,7 +1,9 @@
-﻿using CoreBanking.Application.Interfaces;
+﻿using CoreBanking.Application.Events;
+using CoreBanking.Application.Interfaces;
 using CoreBanking.Domain.Common.Responses;
 using CoreBanking.Domain.Entities;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,13 +18,18 @@ namespace CoreBanking.Application.Commands.Auth
         private readonly IOtpService _otpService;
         private readonly IOtpRepository _otpRepository;
         private readonly IPendingRegistrationRepository _pendingRegistrationRepository;
+        private readonly IEventProducer _eventProducer;
+        private readonly ILogger<VerifyOtpCommandHandler> _logger;
+       
 
-        public VerifyOtpCommandHandler(IUserRepository userRepository, IOtpService otpService, IOtpRepository otpRepository, IPendingRegistrationRepository pendingRegistrationRepository)
+        public VerifyOtpCommandHandler(IUserRepository userRepository, IOtpService otpService, IOtpRepository otpRepository, IPendingRegistrationRepository pendingRegistrationRepository, IEventProducer eventProducer, ILogger<VerifyOtpCommandHandler> logger)
         {
             _userRepository = userRepository;
             _otpService = otpService;
             _otpRepository = otpRepository;
             _pendingRegistrationRepository = pendingRegistrationRepository;
+            _eventProducer = eventProducer;
+            _logger = logger;
         }
 
         public async Task<ApiResponse<string>> Handle(VerifyOtpCommand request, CancellationToken cancellationToken)
@@ -68,6 +75,23 @@ namespace CoreBanking.Application.Commands.Auth
                 await _userRepository.AddAsync(user);
 
                 await _pendingRegistrationRepository.DeleteAsync(pendingUser);
+
+                try
+                {
+                    var userEvent = new UserRegisteredEvent
+                    {
+                        UserId = user.Id,
+                        Email = user.Email,
+                        Reference = $"USR-{DateTime.UtcNow.Ticks}",
+                        CreatedAt = DateTime.UtcNow
+                    };
+                    await _eventProducer.PublishAsync("user.registered", userEvent);
+                    _logger.LogInformation("User registered event published: {Reference}", userEvent.Reference);
+                }
+                catch(Exception KafkaEx)
+                {
+                    _logger.LogError(KafkaEx, "Failed to publish user registered event");
+                }
 
                 return ApiResponse<string>.SuccessResponse("Account verified successfully.", "User registration complete.");
             }

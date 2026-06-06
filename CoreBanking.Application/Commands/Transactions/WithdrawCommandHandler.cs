@@ -1,4 +1,5 @@
-﻿using CoreBanking.Application.Interfaces;
+﻿using CoreBanking.Application.Events;
+using CoreBanking.Application.Interfaces;
 using CoreBanking.Domain.Common.Responses;
 using CoreBanking.Domain.Entities;
 using MediatR;
@@ -20,8 +21,9 @@ namespace CoreBanking.Application.Commands.Transactions
         private readonly IAuditRepository _auditRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<WithdrawCommandHandler> _logger;
+        private readonly IEventProducer _eventProducer;
 
-        public WithdrawCommandHandler(IAccountRepository accountRepository, ITransactionRepository transactionRepository, ICustomerRepository customerRepository, ICurrentUserService currentUser,IAuditRepository auditRepository, IUnitOfWork unitOfWork, ILogger<WithdrawCommandHandler> logger)
+        public WithdrawCommandHandler(IAccountRepository accountRepository, ITransactionRepository transactionRepository, ICustomerRepository customerRepository, ICurrentUserService currentUser,IAuditRepository auditRepository, IUnitOfWork unitOfWork, ILogger<WithdrawCommandHandler> logger, IEventProducer eventProducer)
         {
             _accountRepository = accountRepository;
             _transactionRepository = transactionRepository;
@@ -30,7 +32,8 @@ namespace CoreBanking.Application.Commands.Transactions
             _auditRepository = auditRepository;
             _unitOfWork = unitOfWork;
             _logger = logger;
-            
+            _eventProducer = eventProducer;
+
         }
         public async Task<ApiResponse<string>> Handle(WithdrawCommand request, CancellationToken cancellationToken)
         {
@@ -122,17 +125,28 @@ namespace CoreBanking.Application.Commands.Transactions
 
                 await _transactionRepository.SaveChangesAsync();
 
-                await _auditRepository.AddAsync(new AuditLog
-                {
-                    UserId = _currentUser.UserId,
-                    Action = "Withdrawal",
-                    IpAddress = _currentUser.IpAdress,
-                    Description = $"Withdrew ₦{request.Amount} from account {account.AccountNumber}",
-                    Timestamp = DateTime.UtcNow
-                });
-
-
                 await _unitOfWork.CommitAsync();
+
+
+                try
+                {
+                    var withdrawalEvent = new WithdrawalCompletedEvent
+                    {
+                        AccountId = account.Id,
+                        Amount = request.Amount,
+                        NewBalance = account.Balance,
+                        Reference = transaction.TransactionReference,
+                        OccuredAt = DateTime.UtcNow
+
+                    };
+                    await _eventProducer.PublishAsync("withdrawal.completed", withdrawalEvent);
+                }catch(Exception KafkaEx)
+                {
+                    _logger.LogError(KafkaEx, "Failed to publish withdrawal event for {Reference}", reference);
+                }
+
+
+
 
                 _logger.LogInformation("Withdrawal successfulll: {Reference}", reference);
                 return ApiResponse<string>
@@ -145,16 +159,7 @@ namespace CoreBanking.Application.Commands.Transactions
                 _logger.LogError(ex, "Withdrawal failed");
 
 
-                await _auditRepository.AddAsync(new AuditLog
-                {
-                    Id = Guid.NewGuid(),
-                    UserId = _currentUser.UserId,
-                    Action = "Withdrawal-Failed",
-                    IpAddress = _currentUser.IpAdress ?? "Unknown",
-                    Description = $"Failed Withdrawal attempt of ₦{request.Amount}  from {request.AccountNumber}",
-                    Timestamp = DateTime.UtcNow
-                });
-
+             
 
                 return ApiResponse<string>
                     .InternalServerError("Withdrawal failed");

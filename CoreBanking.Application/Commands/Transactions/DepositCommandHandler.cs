@@ -19,8 +19,9 @@ namespace CoreBanking.Application.Commands.Transactions
         private readonly ICurrentUserService _currentUser;
         private readonly IAuditRepository _auditRepository;
         private readonly ILogger<DepositCommandHandler> _logger;
+        private readonly IEventProducer _eventProducer;
 
-        public DepositCommandHandler(IAccountRepository accountRepository, ITransactionRepository transactionRepository, IUnitOfWork unitOfWork, ICurrentUserService currentUser,IAuditRepository auditRepository, ILogger<DepositCommandHandler> logger)
+        public DepositCommandHandler(IAccountRepository accountRepository, ITransactionRepository transactionRepository, IUnitOfWork unitOfWork, ICurrentUserService currentUser,IAuditRepository auditRepository, ILogger<DepositCommandHandler> logger, IEventProducer eventProducer)
         {
             _accountRepository = accountRepository;
             _transactionRepository = transactionRepository;
@@ -28,6 +29,7 @@ namespace CoreBanking.Application.Commands.Transactions
             _currentUser = currentUser;
             _auditRepository = auditRepository;
             _logger = logger;
+            _eventProducer = eventProducer;
         }
 
         public async Task<ApiResponse<string>> Handle(DepositCommand request, CancellationToken cancellationToken)
@@ -102,17 +104,23 @@ namespace CoreBanking.Application.Commands.Transactions
                 await _transactionRepository.SaveChangesAsync();
 
 
-                await _auditRepository.AddAsync(new AuditLog
-                {
-                    UserId = _currentUser.UserId,
-                    Action = "Deposit",
-                    IpAddress = _currentUser.IpAdress,
-                    Description = $"Deposited ₦{request.Amount} into account {account.AccountNumber}",
-                    Timestamp = DateTime.UtcNow
-                });
-
+               
                 await _unitOfWork.CommitAsync();
 
+                try {
+                    var depositEvent = new Events.DepositCompletedEvent
+                    {
+                        TransactionId = transaction.Id,
+                        AccountId = account.Id,
+                        Amount = request.Amount,
+                        Reference = reference,
+                        OccuredAt = DateTime.UtcNow
+                    };
+                    await _eventProducer.PublishAsync("deposit.completed", depositEvent);
+                }catch(Exception KafkaEx)
+                {
+                    _logger.LogError(KafkaEx, "Failed to publish deposit event for transaction {Reference}", reference);
+                }
                 _logger.LogInformation("Deposit successfull: {Reference}", reference);
 
                 return ApiResponse<string>
@@ -125,16 +133,7 @@ namespace CoreBanking.Application.Commands.Transactions
 
                 _logger.LogError(ex, "Deposit failed");
 
-                await _auditRepository.AddAsync(new AuditLog
-                {
-                    Id = Guid.NewGuid(),
-                    UserId = _currentUser.UserId,
-                    Action = "Deposit-Failed",
-                    IpAddress = _currentUser.IpAdress ?? "Unknown",
-                    Description = $"Failed Deposit attempt of ₦{request.Amount}  to {request.AccountNumber}",
-                    Timestamp = DateTime.UtcNow
-                });
-
+             
                 return ApiResponse<string>
                     .InternalServerError("Deposit failed");
             }
