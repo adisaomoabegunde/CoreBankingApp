@@ -1,7 +1,9 @@
-﻿using CoreBanking.Application.Interfaces;
+﻿using CoreBanking.Application.Events;
+using CoreBanking.Application.Interfaces;
 using CoreBanking.Domain.Common.Responses;
 using CoreBanking.Domain.Entities;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,11 +16,15 @@ namespace CoreBanking.Application.Commands.Customers
     {
         private readonly ICustomerRepository _customerRepository;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IEventProducer _eventProducer;
+        private readonly ILogger<RegisterCustomerCommandHandler> _logger;
 
-        public RegisterCustomerCommandHandler(ICustomerRepository customerRepository, ICurrentUserService currentUserService)
+        public RegisterCustomerCommandHandler(ICustomerRepository customerRepository, ICurrentUserService currentUserService, IEventProducer eventProducer, ILogger<RegisterCustomerCommandHandler> logger )
         {
             _customerRepository = customerRepository;
             _currentUserService = currentUserService;
+            _eventProducer = eventProducer;
+            _logger = logger;
         }
         public async Task<ApiResponse<string>> Handle(RegisterCustomerCommand request, CancellationToken cancellationToken)
         {
@@ -45,6 +51,27 @@ namespace CoreBanking.Application.Commands.Customers
                     KYCStatus = Domain.Enums.KycStatus.Pending
                 };
                 await _customerRepository.AddAsync(customer);
+
+                try
+                {
+                    var customerEvent = new CustomerRegisteredEvent
+                    {
+                        CustomerId = customer.Id,
+                        Email = customer.Email,
+                        FirstName = customer.FirstName,
+                        LastName = customer.LastName,
+                        PhoneNumber = customer.PhoneNumber,
+                        Reference = $"CUST-{DateTime.UtcNow.Ticks}",
+                        CreatedAt = DateTime.UtcNow
+                    };
+                    await _eventProducer.PublishAsync("customer.registered", customerEvent);
+
+                    _logger.LogInformation("Customer registered event published: {Reference}", customerEvent.Reference);
+                }
+                catch(Exception KafkaEx)
+                {
+                    _logger.LogError(KafkaEx, "Failed to publish customer registered event");
+                }
 
                 return ApiResponse<string>
                     .SuccessResponse("Customer registered successfully");

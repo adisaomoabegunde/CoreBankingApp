@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CoreBanking.Application.Events;
 
 
 namespace CoreBanking.Application.Commands.Account
@@ -20,14 +21,16 @@ namespace CoreBanking.Application.Commands.Account
         private readonly ICurrentUserService _currentUserService;
         private readonly IAccountNumberGenerator _accountNumberGenerator;
         private readonly ILogger<CreateAccountCommandHandler> _logger;
+        private readonly IEventProducer _eventProducer;
 
-        public CreateAccountCommandHandler(ICustomerRepository customerRepository, IAccountRepository accountRepository, ICurrentUserService currentUserService, IAccountNumberGenerator accountNumberGenerator, ILogger<CreateAccountCommandHandler> logger)
+        public CreateAccountCommandHandler(ICustomerRepository customerRepository, IAccountRepository accountRepository, ICurrentUserService currentUserService, IAccountNumberGenerator accountNumberGenerator, ILogger<CreateAccountCommandHandler> logger, IEventProducer eventProducer)
         {
             _customerRepository = customerRepository;
             _accountRepository = accountRepository;
             _currentUserService = currentUserService;
             _accountNumberGenerator = accountNumberGenerator;
             _logger = logger;
+            _eventProducer = eventProducer;
         }
         
         public async Task<ApiResponse<string>> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
@@ -91,6 +94,15 @@ namespace CoreBanking.Application.Commands.Account
                 };
 
                 await _accountRepository.AddAsync(account);
+
+                await _eventProducer.PublishAsync("account.created", new AccountCreatedEvent
+                {
+                    AccountId = account.Id,
+                    CustomerId = account.CustomerId,
+                    AccountNumber = account.AccountNumber,
+                    InitialBalance = account.Balance,
+                    CreatedAt = DateTime.UtcNow
+                });
 
                 _logger.LogInformation("Account created successfully. AccountNumber: {AccountNumber}", accountNumber);
 

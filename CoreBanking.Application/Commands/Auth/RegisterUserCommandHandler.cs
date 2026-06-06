@@ -5,6 +5,7 @@ using CoreBanking.Domain.Common.Exceptions;
 using System;
 using CoreBanking.Domain.Common.Responses;
 using CoreBanking.Domain.Enums;
+using Microsoft.Extensions.Logging;
 
 
 namespace CoreBanking.Application.Commands.Auth
@@ -15,13 +16,17 @@ namespace CoreBanking.Application.Commands.Auth
         private readonly IOtpRepository _otpRepository;
         private readonly IOtpService _otpService;
         private readonly IPendingRegistrationRepository _pendingRegistrationRepository;
+        private readonly IEventProducer _eventProducer;
+        private readonly ILogger<RegisterUserCommandHandler> _logger;
 
-        public RegisterUserCommandHandler(IUserRepository userRepository, IOtpService otpService, IOtpRepository otpRepository, IPendingRegistrationRepository pendingRegistrationRepository)
+        public RegisterUserCommandHandler(IUserRepository userRepository, IOtpService otpService, IOtpRepository otpRepository, IPendingRegistrationRepository pendingRegistrationRepository, IEventProducer eventProducer, ILogger<RegisterUserCommandHandler> logger)
         {
             _userRepository = userRepository;
             _otpService = otpService;
             _otpRepository = otpRepository;
             _pendingRegistrationRepository = pendingRegistrationRepository;
+            _eventProducer = eventProducer;
+            _logger = logger;
         }
 
         public async Task<ApiResponse<RegisterUserResponse>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
@@ -68,6 +73,9 @@ namespace CoreBanking.Application.Commands.Auth
                     Role = UserRole.Customer,
                     Otp = otpCode
                 };
+
+
+
 
                 return ApiResponse<RegisterUserResponse>
                     .SuccessResponse(response, "OTP has been sent to your email. Kindly confirm OTP.");

@@ -1,8 +1,10 @@
-﻿using CoreBanking.Application.Interfaces;
+﻿using CoreBanking.Application.Events;
+using CoreBanking.Application.Interfaces;
 using CoreBanking.Domain.Common.Responses;
 using CoreBanking.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -17,11 +19,17 @@ namespace CoreBanking.Application.Commands.Auth
         private readonly ITokenBlacklistRepository _tokenBlacklistRepository;
         private readonly IAuditRepository _auditRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public LogoutCommandHandler(ITokenBlacklistRepository tokenBlacklistRepository, IAuditRepository auditRepository, IHttpContextAccessor httpContextAccessor)
+        private readonly ICurrentUserService _currentUserService;
+        private readonly IEventProducer _eventProducer;
+        private readonly ILogger<LogoutCommandHandler> _logger;
+        public LogoutCommandHandler(ITokenBlacklistRepository tokenBlacklistRepository, IAuditRepository auditRepository, IHttpContextAccessor httpContextAccessor, ICurrentUserService currentUserService, IEventProducer eventProducer, ILogger<LogoutCommandHandler> logger)
         {
             _tokenBlacklistRepository = tokenBlacklistRepository;
             _auditRepository = auditRepository;
             _httpContextAccessor = httpContextAccessor;
+            _currentUserService = currentUserService;
+            _eventProducer = eventProducer;
+            _logger = logger;
         }
         public async Task<ApiResponse<string>> Handle(LogoutCommand request, CancellationToken cancellationToken)
         {
@@ -40,7 +48,7 @@ namespace CoreBanking.Application.Commands.Auth
 
                 var expiry = jwtToken.ValidTo;
 
-
+                var userId = _currentUserService.UserId;
 
                 await _tokenBlacklistRepository.AddAsync(new RevokedToken
                 {
@@ -54,6 +62,27 @@ namespace CoreBanking.Application.Commands.Auth
                     Description = "User logged out",
                     IpAddress = "N/A"
                 });
+
+                try
+                {
+                    var logoutEvent = new UserLoggedOutEvent
+                    {
+                        UserId = userId,
+                        IpAddress = _currentUserService.IpAdress,
+                        LoggedOutAt = DateTime.UtcNow,
+                        Reference = $"LOGOUT-{DateTime.UtcNow.Ticks}"
+
+                    };
+                    await _eventProducer.PublishAsync("user.loggedout", logoutEvent);
+
+                    _logger.LogInformation("User logout event published: {Reference}", logoutEvent.Reference);
+
+                }
+                catch(Exception KafkaEx)
+                {
+                    _logger.LogError(KafkaEx, "Failed to publish user logout event");
+                }
+
                 return ApiResponse<string>
                     .SuccessResponse("Logout successful", "00");
 
